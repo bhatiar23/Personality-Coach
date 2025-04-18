@@ -228,7 +228,7 @@ def loading_screen():
             </svg>
             Processing your responses...
         </div>
-        <p style="margin-top: 1rem; color: #4B5563;">Our AI is analyzing your personality traits and generating personalized insights.</p>
+        <p style="margin-top: 1rem;">Our AI is analyzing your personality traits and generating personalized insights.</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -339,7 +339,7 @@ def results_view():
     st.markdown(f"""
     <div style="text-align: center; margin-bottom: 2rem;">
         <div style="display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 9999px; 
-                    font-size: 0.875rem; font-weight: 500; background-color: rgba(59, 130, 246, 0.1); color: #3B82F6;">
+                    font-size: 0.875rem; font-weight: 500; background-color: rgba(59, 130, 246, 0.1);">
             Your Personality Type
         </div>
         <h2 style="margin-top: 0.5rem; font-size: 1.875rem; font-weight: 700; color: #1F2937;">
