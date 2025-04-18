@@ -331,145 +331,222 @@ def loading_screen():
     st.session_state.view = "results"
     st.rerun()
 
-# Results View
+# # Results View
+# def results_view():
+#     results = st.session_state.personality_results
+    
+#     # Display personality type header
+#     st.markdown(f"""
+#     <div style="text-align: center; margin-bottom: 2rem;">
+#         <div style="display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 9999px; 
+#                     font-size: 0.875rem; font-weight: 800; background-color: rgba(59, 130, 246, 0.1);">
+#             Your Personality Type
+#         </div>
+#         <h2 style="margin-top: 0.5rem; font-size: 1.875rem; font-weight: 700">
+#             {results["personalityType"]} - {results["description"].split(' - ')[1] if ' - ' in results["description"] else ''}
+#         </h2>
+#         <p style="margin-top: 0.5rem;">
+#             {results["description"].split(' - ')[2] if ' - ' in results["description"] and len(results["description"].split(' - ')) > 2 else results["description"]}
+#         </p>
+#     </div>
+#     """, unsafe_allow_html=True)
+    
+#     # Strengths & Weaknesses section
+#     st.markdown("""
+#     <div style="margin-bottom: 2rem; background-color: white; border-radius: 0.5rem; border: 1px solid #E5E7EB; padding: 1.5rem;">
+#         <h3 style="font-size: 1.25rem; font-weight: 500; color: #1F2937; margin-bottom: 1rem;">
+#             Strengths & Weaknesses for your Personality Type
+#         </h3>
+#     """, unsafe_allow_html=True)
+    
+#     # Parse strengths
+#     try:
+#         strengths = json.loads(results["strengths"])
+#         st.markdown("""
+#         <h4 style="display: flex; align-items: center; font-size: 1.125rem; font-weight: 500; color: #1F2937; margin-bottom: 0.75rem;">
+#             <span style="color: #10B981; margin-right: 0.5rem;">✓</span>
+#             Strengths
+#         </h4>
+#         <ul style="margin-bottom: 1.5rem; color: #4B5563;">
+#         """, unsafe_allow_html=True)
+        
+#         for strength in strengths:
+#             st.markdown(f"""
+#             <li style="display: flex; align-items: flex-start; margin-bottom: 0.5rem;">
+#                 <span style="color: #10B981; margin-right: 0.5rem; margin-top: 0.25rem;">✓</span>
+#                 <span>{strength}</span>
+#             </li>
+#             """, unsafe_allow_html=True)
+        
+#         st.markdown("</ul>", unsafe_allow_html=True)
+#     except:
+#         st.markdown(f"""
+#         <h4 style="font-size: 1.125rem; font-weight: 500; color: #1F2937; margin-bottom: 0.75rem;">
+#             <span style="color: #10B981; margin-right: 0.5rem;">✓</span>
+#             Strengths
+#         </h4>
+#         <p style="margin-bottom: 1.5rem; color: #4B5563;">{results["strengths"]}</p>
+#         """, unsafe_allow_html=True)
+    
+#     # Parse weaknesses
+#     try:
+#         weaknesses = json.loads(results["weaknesses"])
+#         st.markdown("""
+#         <h4 style="display: flex; align-items: center; font-size: 1.125rem; font-weight: 500; color: #1F2937; margin-bottom: 0.75rem;">
+#             <span style="color: #EF4444; margin-right: 0.5rem;">✗</span>
+#             Potential Challenges
+#         </h4>
+#         <ul style="color: #4B5563;">
+#         """, unsafe_allow_html=True)
+        
+#         for weakness in weaknesses:
+#             st.markdown(f"""
+#             <li style="display: flex; align-items: flex-start; margin-bottom: 0.5rem;">
+#                 <span style="color: #EF4444; margin-right: 0.5rem; margin-top: 0.25rem;">✗</span>
+#                 <span>{weakness}</span>
+#             </li>
+#             """, unsafe_allow_html=True)
+        
+#         st.markdown("</ul>", unsafe_allow_html=True)
+#     except:
+#         st.markdown(f"""
+#         <h4 style="font-size: 1.125rem; font-weight: 500; color: #1F2937; margin-bottom: 0.75rem;">
+#             <span style="color: #EF4444; margin-right: 0.5rem;">✗</span>
+#             Potential Challenges
+#         </h4>
+#         <p style="color: #4B5563;">{results["weaknesses"]}</p>
+#         """, unsafe_allow_html=True)
+    
+#     st.markdown("</div>", unsafe_allow_html=True)
+    
+#     # Traits to Develop section
+#     with st.expander("Traits to Develop", expanded=False):
+#         try:
+#             traits = json.loads(results["traits"])
+#             for i, trait in enumerate(traits):
+#                 st.markdown(f"""
+#                 <div style="margin-bottom: 1.5rem;">
+#                     <h4 style="font-size: 1.125rem; font-weight: 700; color: #1F2937; margin-bottom: 0.5rem;">
+#                         {trait.get('trait', f'Trait {i+1}')}
+#                     </h4>
+#                     <p style="margin-bottom: 0.75rem; color: #4B5563;">
+#                         {trait.get('explanation', '')}
+#                     </p>
+#                     <div style="margin-top: 0.5rem; background-color: #F9FAFB; padding: 0.75rem; border-radius: 0.375rem; border: 1px solid #F3F4F6;">
+#                         <p style="font-size: 0.875rem; font-weight: 600; color: #4B5563; margin-bottom: 0.25rem;">Action Steps:</p>
+#                         <p style="font-size: 0.875rem; color: #4B5563;">
+#                             {trait.get('action_steps', '')}
+#                         </p>
+#                     </div>
+#                 </div>
+#                 """, unsafe_allow_html=True)
+#         except:
+#             st.markdown(f"<p>{results['traits']}</p>", unsafe_allow_html=True)
+    
+#     # Social sharing options
+#     st.markdown("""
+#     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 1rem; margin-bottom: 1rem;">
+#         <p style="color: #4B5563; margin-bottom: 1rem;">Find these insights helpful?</p>
+#         <div style="display: flex; gap: 1rem;">
+#             <button style="display: flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.75rem; font-size: 0.875rem; 
+#                           font-weight: 500; border-radius: 0.375rem; border: 1px solid #E5E7EB; background-color: white;">
+#                 <span style="color: #1DA1F2;">🐦</span> Share
+#             </button>
+#             <button style="display: flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.75rem; font-size: 0.875rem; 
+#                           font-weight: 500; border-radius: 0.375rem; border: 1px solid #E5E7EB; background-color: white;">
+#                 <span style="color: #6B7280;">✉️</span> Email
+#             </button>
+#             <button style="display: flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.75rem; font-size: 0.875rem; 
+#                           font-weight: 500; border-radius: 0.375rem; border: 1px solid #E5E7EB; background-color: white;">
+#                 <span style="color: #6B7280;">💾</span> Save
+#             </button>
+#         </div>
+#     </div>
+#     """, unsafe_allow_html=True)
+    
+#     # Begin Chat button
+#     col1, col2, col3 = st.columns([1, 2, 1])
+#     with col2:
+#         if st.button("Begin Chat with Your Personality Coach", use_container_width=True):
+#             st.session_state.view = "register"
+#             st.rerun()
+
+import json
+import streamlit as st
+
 def results_view():
-    results = st.session_state.personality_results
-    
-    # Display personality type header
-    st.markdown(f"""
-    <div style="text-align: center; margin-bottom: 2rem;">
-        <div style="display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 9999px; 
-                    font-size: 0.875rem; font-weight: 800; background-color: rgba(59, 130, 246, 0.1);">
-            Your Personality Type
-        </div>
-        <h2 style="margin-top: 0.5rem; font-size: 1.875rem; font-weight: 700">
-            {results["personalityType"]} - {results["description"].split(' - ')[1] if ' - ' in results["description"] else ''}
-        </h2>
-        <p style="margin-top: 0.5rem;">
-            {results["description"].split(' - ')[2] if ' - ' in results["description"] and len(results["description"].split(' - ')) > 2 else results["description"]}
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Strengths & Weaknesses section
-    st.markdown("""
-    <div style="margin-bottom: 2rem; background-color: white; border-radius: 0.5rem; border: 1px solid #E5E7EB; padding: 1.5rem;">
-        <h3 style="font-size: 1.25rem; font-weight: 500; color: #1F2937; margin-bottom: 1rem;">
-            Strengths & Weaknesses for your Personality Type
-        </h3>
-    """, unsafe_allow_html=True)
-    
-    # Parse strengths
+    results = st.session_state.personality_results or {}
+
+    # --- Main Title & Subtitle ---
+    # Show the type as the big title
+    type_header = results.get("personalityType", "Unknown")
+    description = results.get("description", "")
+    # Split off the human‑readable subtitle if present
+    subtitle = ""
+    if " - " in description:
+        parts = description.split(" - ", 2)
+        subtitle = parts[1]  # e.g. "The Architect"
+        description_detail = parts[2] if len(parts) > 2 else parts[0]
+    else:
+        subtitle = description
+        description_detail = ""
+
+    st.title(f"{type_header}")
+    if subtitle:
+        st.subheader(subtitle)
+    if description_detail:
+        st.caption(description_detail)
+
+    st.markdown("---")
+
+    # --- Strengths & Challenges ---
+    st.subheader("Strengths & Potential Challenges")
+
+    # Strengths
+    st.markdown("**Strengths:**")
     try:
-        strengths = json.loads(results["strengths"])
-        st.markdown("""
-        <h4 style="display: flex; align-items: center; font-size: 1.125rem; font-weight: 500; color: #1F2937; margin-bottom: 0.75rem;">
-            <span style="color: #10B981; margin-right: 0.5rem;">✓</span>
-            Strengths
-        </h4>
-        <ul style="margin-bottom: 1.5rem; color: #4B5563;">
-        """, unsafe_allow_html=True)
-        
-        for strength in strengths:
-            st.markdown(f"""
-            <li style="display: flex; align-items: flex-start; margin-bottom: 0.5rem;">
-                <span style="color: #10B981; margin-right: 0.5rem; margin-top: 0.25rem;">✓</span>
-                <span>{strength}</span>
-            </li>
-            """, unsafe_allow_html=True)
-        
-        st.markdown("</ul>", unsafe_allow_html=True)
-    except:
-        st.markdown(f"""
-        <h4 style="font-size: 1.125rem; font-weight: 500; color: #1F2937; margin-bottom: 0.75rem;">
-            <span style="color: #10B981; margin-right: 0.5rem;">✓</span>
-            Strengths
-        </h4>
-        <p style="margin-bottom: 1.5rem; color: #4B5563;">{results["strengths"]}</p>
-        """, unsafe_allow_html=True)
-    
-    # Parse weaknesses
+        strengths = json.loads(results.get("strengths", "[]"))
+    except json.JSONDecodeError:
+        strengths = [results.get("strengths", "N/A")]
+    for s in strengths:
+        st.markdown(f"- ✅ {s}")
+
+    # Challenges
+    st.markdown("**Potential Challenges:**")
     try:
-        weaknesses = json.loads(results["weaknesses"])
-        st.markdown("""
-        <h4 style="display: flex; align-items: center; font-size: 1.125rem; font-weight: 500; color: #1F2937; margin-bottom: 0.75rem;">
-            <span style="color: #EF4444; margin-right: 0.5rem;">✗</span>
-            Potential Challenges
-        </h4>
-        <ul style="color: #4B5563;">
-        """, unsafe_allow_html=True)
-        
-        for weakness in weaknesses:
-            st.markdown(f"""
-            <li style="display: flex; align-items: flex-start; margin-bottom: 0.5rem;">
-                <span style="color: #EF4444; margin-right: 0.5rem; margin-top: 0.25rem;">✗</span>
-                <span>{weakness}</span>
-            </li>
-            """, unsafe_allow_html=True)
-        
-        st.markdown("</ul>", unsafe_allow_html=True)
-    except:
-        st.markdown(f"""
-        <h4 style="font-size: 1.125rem; font-weight: 500; color: #1F2937; margin-bottom: 0.75rem;">
-            <span style="color: #EF4444; margin-right: 0.5rem;">✗</span>
-            Potential Challenges
-        </h4>
-        <p style="color: #4B5563;">{results["weaknesses"]}</p>
-        """, unsafe_allow_html=True)
-    
-    st.markdown("</div>", unsafe_allow_html=True)
-    
-    # Traits to Develop section
-    with st.expander("Traits to Develop", expanded=False):
-        try:
-            traits = json.loads(results["traits"])
-            for i, trait in enumerate(traits):
-                st.markdown(f"""
-                <div style="margin-bottom: 1.5rem;">
-                    <h4 style="font-size: 1.125rem; font-weight: 700; color: #1F2937; margin-bottom: 0.5rem;">
-                        {trait.get('trait', f'Trait {i+1}')}
-                    </h4>
-                    <p style="margin-bottom: 0.75rem; color: #4B5563;">
-                        {trait.get('explanation', '')}
-                    </p>
-                    <div style="margin-top: 0.5rem; background-color: #F9FAFB; padding: 0.75rem; border-radius: 0.375rem; border: 1px solid #F3F4F6;">
-                        <p style="font-size: 0.875rem; font-weight: 600; color: #4B5563; margin-bottom: 0.25rem;">Action Steps:</p>
-                        <p style="font-size: 0.875rem; color: #4B5563;">
-                            {trait.get('action_steps', '')}
-                        </p>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-        except:
-            st.markdown(f"<p>{results['traits']}</p>", unsafe_allow_html=True)
-    
-    # Social sharing options
-    st.markdown("""
-    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 1rem; margin-bottom: 1rem;">
-        <p style="color: #4B5563; margin-bottom: 1rem;">Find these insights helpful?</p>
-        <div style="display: flex; gap: 1rem;">
-            <button style="display: flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.75rem; font-size: 0.875rem; 
-                          font-weight: 500; border-radius: 0.375rem; border: 1px solid #E5E7EB; background-color: white;">
-                <span style="color: #1DA1F2;">🐦</span> Share
-            </button>
-            <button style="display: flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.75rem; font-size: 0.875rem; 
-                          font-weight: 500; border-radius: 0.375rem; border: 1px solid #E5E7EB; background-color: white;">
-                <span style="color: #6B7280;">✉️</span> Email
-            </button>
-            <button style="display: flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.75rem; font-size: 0.875rem; 
-                          font-weight: 500; border-radius: 0.375rem; border: 1px solid #E5E7EB; background-color: white;">
-                <span style="color: #6B7280;">💾</span> Save
-            </button>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Begin Chat button
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        if st.button("Begin Chat with Your Personality Coach", use_container_width=True):
-            st.session_state.view = "register"
-            st.rerun()
+        weaknesses = json.loads(results.get("weaknesses", "[]"))
+    except json.JSONDecodeError:
+        weaknesses = [results.get("weaknesses", "N/A")]
+    for w in weaknesses:
+        st.markdown(f"- ❌ {w}")
+
+    st.markdown("---")
+
+    # --- Traits to Develop ---
+    st.subheader("Traits to Develop")
+    try:
+        traits = json.loads(results.get("traits", "[]"))
+    except json.JSONDecodeError:
+        traits = []
+    for trait in traits:
+        name = trait.get("trait", "Unnamed Trait")
+        explanation = trait.get("explanation", "")
+        steps = trait.get("action_steps", "")
+        st.markdown(f"**{name}**")
+        if explanation:
+            st.write(explanation)
+        if steps:
+            with st.expander("Action Steps"):
+                st.write(steps)
+
+    st.markdown("---")
+
+    # --- Begin Chat Button ---
+    if st.button("💬 Begin Chat with Your Personality Coach"):
+        st.session_state.view = "chat"
+        st.rerun()
+
+
 
 # Registration function
 def register_view():
