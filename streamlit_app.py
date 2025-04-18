@@ -37,45 +37,147 @@ if "test_responses" not in st.session_state:
     st.session_state.test_responses = {}
 if "personality_results" not in st.session_state:
     st.session_state.personality_results = None
+if "current_page" not in st.session_state:
+    st.session_state.current_page = 0
+
+# Custom CSS for top-right login button
+st.markdown("""
+<style>
+    div.stButton > button {
+        background-color: #3B82F6;
+        color: white;
+        font-weight: bold;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+    }
+    div.stButton > button:hover {
+        background-color: #2563EB;
+    }
+    .top-right-container {
+        position: fixed;
+        top: 1rem;
+        right: 2rem;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+    }
+    .user-info {
+        margin-right: 1rem;
+        color: #4B5563;
+        font-weight: 500;
+    }
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+    }
+    .profile-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background-color: #f9fafb;
+    }
+    .personality-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background-color: white;
+    }
+    .personality-badge {
+        display: inline-block;
+        background-color: rgba(59, 130, 246, 0.1);
+        color: #3B82F6;
+        border-radius: 9999px;
+        padding: 5px 12px;
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+    .trait-card {
+        background-color: #f9fafb;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Top-right login/profile button
+def render_top_right_button():
+    if st.session_state.logged:
+        with st.container():
+            col1, col2, col3 = st.columns([6, 2, 2])
+            with col3:
+                if st.button("Logout", key="logout_button"):
+                    for key in list(st.session_state.keys()):
+                        del st.session_state[key]
+                    st.session_state.view = "intro"
+                    st.rerun()
+            with col2:
+                if st.button("Profile", key="profile_button"):
+                    st.session_state.view = "profile"
+                    st.rerun()
+            with col1:
+                st.markdown(f"""
+                <div style="text-align: right; padding-right: 10px; color: #4B5563;">
+                    Logged in as: <b>{st.session_state.user}</b>
+                </div>
+                """, unsafe_allow_html=True)
+    else:
+        col1, col2 = st.columns([8, 2])
+        with col2:
+            if st.button("Login", key="login_button"):
+                st.session_state.view = "login"
+                st.rerun()
 
 # Intro Screen
 def intro_screen():
+    render_top_right_button()
+    
     st.markdown("""
     <div style="text-align: center; padding: 2rem 0;">
-        <h1 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;">Discover Your Personality Type</h1>
-        <p style="margin-bottom: 1.5rem;">Take this short personality assessment to receive personalized insights and advice for your challenges.</p>
+        <h1 style="font-size: 2rem; font-weight: 600; margin-bottom: 1rem;">Discover Your Personality Type</h1>
+        <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">Take this short personality assessment to receive personalized insights and advice for your challenges.</p>
     </div>
     """, unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.markdown("""
-        <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-            <span style="margin-right: 0.5rem;">⏱️</span>
+        <div style="display: flex; align-items: center; margin-bottom: 1rem; font-size: 1.05rem;">
+            <span style="margin-right: 0.75rem; font-size: 1.25rem;">⏱️</span>
             <span>Takes approximately 5-7 minutes</span>
         </div>
         """, unsafe_allow_html=True)
         
         st.markdown("""
-        <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-            <span style="margin-right: 0.5rem;">🛡️</span>
+        <div style="display: flex; align-items: center; margin-bottom: 1rem; font-size: 1.05rem;">
+            <span style="margin-right: 0.75rem; font-size: 1.25rem;">🛡️</span>
             <span>Your responses are private and secure</span>
         </div>
         """, unsafe_allow_html=True)
         
         st.markdown("""
-        <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-            <span style="margin-right: 0.5rem;">🤖</span>
+        <div style="display: flex; align-items: center; margin-bottom: 1.5rem; font-size: 1.05rem;">
+            <span style="margin-right: 0.75rem; font-size: 1.25rem;">🤖</span>
             <span>AI-powered insights based on your responses</span>
         </div>
         """, unsafe_allow_html=True)
         
         if st.button("Begin Assessment →", use_container_width=True):
             st.session_state.view = "mbti_test"
+            st.session_state.current_page = 0
             st.rerun()
 
 # MBTI Test function
 def mbti_test():
+    render_top_right_button()
+    
     st.title("Personality Assessment")
     
     # Define test questions organized by pages
@@ -121,10 +223,6 @@ def mbti_test():
             ]
         }
     ]
-    
-    # Determine current page
-    if "current_page" not in st.session_state:
-        st.session_state.current_page = 0
     
     current_page = pages[st.session_state.current_page]
     
@@ -217,6 +315,8 @@ def mbti_test():
 
 # Loading Screen
 def loading_screen():
+    render_top_right_button()
+    
     st.markdown("""
     <div style="text-align: center; padding: 3rem 0;">
         <div style="display: inline-flex; align-items: center; padding: 0.5rem 1rem; font-weight: 600; font-size: 0.875rem; 
@@ -228,7 +328,7 @@ def loading_screen():
             </svg>
             Processing your responses...
         </div>
-        <p style="margin-top: 1rem;">Our AI is analyzing your personality traits and generating personalized insights.</p>
+        <p style="margin-top: 1rem; color: #4B5563;">Our AI is analyzing your personality traits and generating personalized insights.</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -331,229 +431,96 @@ def loading_screen():
     st.session_state.view = "results"
     st.rerun()
 
-# # Results View
-# def results_view():
-#     results = st.session_state.personality_results
-    
-#     # Display personality type header
-#     st.markdown(f"""
-#     <div style="text-align: center; margin-bottom: 2rem;">
-#         <div style="display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 9999px; 
-#                     font-size: 0.875rem; font-weight: 800; background-color: rgba(59, 130, 246, 0.1);">
-#             Your Personality Type
-#         </div>
-#         <h2 style="margin-top: 0.5rem; font-size: 1.875rem; font-weight: 700">
-#             {results["personalityType"]} - {results["description"].split(' - ')[1] if ' - ' in results["description"] else ''}
-#         </h2>
-#         <p style="margin-top: 0.5rem;">
-#             {results["description"].split(' - ')[2] if ' - ' in results["description"] and len(results["description"].split(' - ')) > 2 else results["description"]}
-#         </p>
-#     </div>
-#     """, unsafe_allow_html=True)
-    
-#     # Strengths & Weaknesses section
-#     st.markdown("""
-#     <div style="margin-bottom: 2rem; background-color: white; border-radius: 0.5rem; border: 1px solid #E5E7EB; padding: 1.5rem;">
-#         <h3 style="font-size: 1.25rem; font-weight: 500; color: #1F2937; margin-bottom: 1rem;">
-#             Strengths & Weaknesses for your Personality Type
-#         </h3>
-#     """, unsafe_allow_html=True)
-    
-#     # Parse strengths
-#     try:
-#         strengths = json.loads(results["strengths"])
-#         st.markdown("""
-#         <h4 style="display: flex; align-items: center; font-size: 1.125rem; font-weight: 500; color: #1F2937; margin-bottom: 0.75rem;">
-#             <span style="color: #10B981; margin-right: 0.5rem;">✓</span>
-#             Strengths
-#         </h4>
-#         <ul style="margin-bottom: 1.5rem; color: #4B5563;">
-#         """, unsafe_allow_html=True)
-        
-#         for strength in strengths:
-#             st.markdown(f"""
-#             <li style="display: flex; align-items: flex-start; margin-bottom: 0.5rem;">
-#                 <span style="color: #10B981; margin-right: 0.5rem; margin-top: 0.25rem;">✓</span>
-#                 <span>{strength}</span>
-#             </li>
-#             """, unsafe_allow_html=True)
-        
-#         st.markdown("</ul>", unsafe_allow_html=True)
-#     except:
-#         st.markdown(f"""
-#         <h4 style="font-size: 1.125rem; font-weight: 500; color: #1F2937; margin-bottom: 0.75rem;">
-#             <span style="color: #10B981; margin-right: 0.5rem;">✓</span>
-#             Strengths
-#         </h4>
-#         <p style="margin-bottom: 1.5rem; color: #4B5563;">{results["strengths"]}</p>
-#         """, unsafe_allow_html=True)
-    
-#     # Parse weaknesses
-#     try:
-#         weaknesses = json.loads(results["weaknesses"])
-#         st.markdown("""
-#         <h4 style="display: flex; align-items: center; font-size: 1.125rem; font-weight: 500; color: #1F2937; margin-bottom: 0.75rem;">
-#             <span style="color: #EF4444; margin-right: 0.5rem;">✗</span>
-#             Potential Challenges
-#         </h4>
-#         <ul style="color: #4B5563;">
-#         """, unsafe_allow_html=True)
-        
-#         for weakness in weaknesses:
-#             st.markdown(f"""
-#             <li style="display: flex; align-items: flex-start; margin-bottom: 0.5rem;">
-#                 <span style="color: #EF4444; margin-right: 0.5rem; margin-top: 0.25rem;">✗</span>
-#                 <span>{weakness}</span>
-#             </li>
-#             """, unsafe_allow_html=True)
-        
-#         st.markdown("</ul>", unsafe_allow_html=True)
-#     except:
-#         st.markdown(f"""
-#         <h4 style="font-size: 1.125rem; font-weight: 500; color: #1F2937; margin-bottom: 0.75rem;">
-#             <span style="color: #EF4444; margin-right: 0.5rem;">✗</span>
-#             Potential Challenges
-#         </h4>
-#         <p style="color: #4B5563;">{results["weaknesses"]}</p>
-#         """, unsafe_allow_html=True)
-    
-#     st.markdown("</div>", unsafe_allow_html=True)
-    
-#     # Traits to Develop section
-#     with st.expander("Traits to Develop", expanded=False):
-#         try:
-#             traits = json.loads(results["traits"])
-#             for i, trait in enumerate(traits):
-#                 st.markdown(f"""
-#                 <div style="margin-bottom: 1.5rem;">
-#                     <h4 style="font-size: 1.125rem; font-weight: 700; color: #1F2937; margin-bottom: 0.5rem;">
-#                         {trait.get('trait', f'Trait {i+1}')}
-#                     </h4>
-#                     <p style="margin-bottom: 0.75rem; color: #4B5563;">
-#                         {trait.get('explanation', '')}
-#                     </p>
-#                     <div style="margin-top: 0.5rem; background-color: #F9FAFB; padding: 0.75rem; border-radius: 0.375rem; border: 1px solid #F3F4F6;">
-#                         <p style="font-size: 0.875rem; font-weight: 600; color: #4B5563; margin-bottom: 0.25rem;">Action Steps:</p>
-#                         <p style="font-size: 0.875rem; color: #4B5563;">
-#                             {trait.get('action_steps', '')}
-#                         </p>
-#                     </div>
-#                 </div>
-#                 """, unsafe_allow_html=True)
-#         except:
-#             st.markdown(f"<p>{results['traits']}</p>", unsafe_allow_html=True)
-    
-#     # Social sharing options
-#     st.markdown("""
-#     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 1rem; margin-bottom: 1rem;">
-#         <p style="color: #4B5563; margin-bottom: 1rem;">Find these insights helpful?</p>
-#         <div style="display: flex; gap: 1rem;">
-#             <button style="display: flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.75rem; font-size: 0.875rem; 
-#                           font-weight: 500; border-radius: 0.375rem; border: 1px solid #E5E7EB; background-color: white;">
-#                 <span style="color: #1DA1F2;">🐦</span> Share
-#             </button>
-#             <button style="display: flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.75rem; font-size: 0.875rem; 
-#                           font-weight: 500; border-radius: 0.375rem; border: 1px solid #E5E7EB; background-color: white;">
-#                 <span style="color: #6B7280;">✉️</span> Email
-#             </button>
-#             <button style="display: flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.75rem; font-size: 0.875rem; 
-#                           font-weight: 500; border-radius: 0.375rem; border: 1px solid #E5E7EB; background-color: white;">
-#                 <span style="color: #6B7280;">💾</span> Save
-#             </button>
-#         </div>
-#     </div>
-#     """, unsafe_allow_html=True)
-    
-#     # Begin Chat button
-#     col1, col2, col3 = st.columns([1, 2, 1])
-#     with col2:
-#         if st.button("Begin Chat with Your Personality Coach", use_container_width=True):
-#             st.session_state.view = "register"
-#             st.rerun()
-
-import json
-import streamlit as st
-
+# Results View
 def results_view():
-    results = st.session_state.personality_results or {}
-
-    # --- Main Title & Subtitle ---
-    # Show the type as the big title
-    type_header = results.get("personalityType", "Unknown")
+    render_top_right_button()
+    
+    results = st.session_state.personality_results
+    
+    # Parse the personality type and description
+    personality_type = results.get("personalityType", "Unknown")
     description = results.get("description", "")
-    # Split off the human‑readable subtitle if present
-    subtitle = ""
-    if " - " in description:
-        parts = description.split(" - ", 2)
-        subtitle = parts[1]  # e.g. "The Architect"
-        description_detail = parts[2] if len(parts) > 2 else parts[0]
-    else:
-        subtitle = description
-        description_detail = ""
-
-    st.title(f"{type_header}")
-    if subtitle:
-        st.subheader(subtitle)
-    if description_detail:
-        st.caption(description_detail)
-
+    
+    # Split the description if it contains separators
+    parts = description.split(" - ")
+    type_name = parts[1] if len(parts) > 1 else ""
+    type_desc = parts[2] if len(parts) > 2 else ""
+    
+    # Display personality type header
+    st.title(f"{personality_type}")
+    st.subheader(type_name)
+    st.write(type_desc)
+    
     st.markdown("---")
-
-    # --- Strengths & Challenges ---
+    
+    # Strengths & Weaknesses section
     st.subheader("Strengths & Potential Challenges")
-
-    # Strengths
-    st.markdown("**Strengths:**")
-    try:
-        strengths = json.loads(results.get("strengths", "[]"))
-    except json.JSONDecodeError:
-        strengths = [results.get("strengths", "N/A")]
-    for s in strengths:
-        st.markdown(f"- ✅ {s}")
-
-    # Challenges
-    st.markdown("**Potential Challenges:**")
-    try:
-        weaknesses = json.loads(results.get("weaknesses", "[]"))
-    except json.JSONDecodeError:
-        weaknesses = [results.get("weaknesses", "N/A")]
-    for w in weaknesses:
-        st.markdown(f"- ❌ {w}")
-
+    
+    col1, col2 = st.columns(2)
+    
+    # Parse strengths
+    with col1:
+        st.markdown("**Strengths:**")
+        try:
+            strengths = json.loads(results.get("strengths", "[]"))
+            for strength in strengths:
+                st.markdown(f"- ✅ {strength}")
+        except:
+            st.write(results.get("strengths", "No strengths data available"))
+    
+    # Parse weaknesses
+    with col2:
+        st.markdown("**Potential Challenges:**")
+        try:
+            weaknesses = json.loads(results.get("weaknesses", "[]"))
+            for weakness in weaknesses:
+                st.markdown(f"- ❌ {weakness}")
+        except:
+            st.write(results.get("weaknesses", "No challenges data available"))
+    
     st.markdown("---")
-
-    # --- Traits to Develop ---
+    
+    # Traits to Develop section
     st.subheader("Traits to Develop")
+    
     try:
         traits = json.loads(results.get("traits", "[]"))
-    except json.JSONDecodeError:
-        traits = []
-    for trait in traits:
-        name = trait.get("trait", "Unnamed Trait")
-        explanation = trait.get("explanation", "")
-        steps = trait.get("action_steps", "")
-        st.markdown(f"**{name}**")
-        if explanation:
-            st.write(explanation)
-        if steps:
+        for trait in traits:
+            st.markdown(f"**{trait.get('trait', 'Unnamed Trait')}**")
+            st.write(trait.get("explanation", ""))
             with st.expander("Action Steps"):
-                st.write(steps)
-
+                st.write(trait.get("action_steps", ""))
+    except:
+        st.write(results.get("traits", "No traits data available"))
+    
     st.markdown("---")
-
-    # --- Begin Chat Button ---
-    if st.button("💬 Begin Chat with Your Personality Coach"):
-        st.session_state.view = "chat"
-        st.rerun()
-
-
+    
+    # Begin Chat button or Register/Login prompt
+    if st.session_state.logged:
+        if st.button("💬 Begin Chat with Your Personality Coach", use_container_width=True):
+            st.session_state.view = "chat"
+            st.rerun()
+    else:
+        st.info("Register or login to chat with your personality coach")
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Register", use_container_width=True):
+                st.session_state.view = "register"
+                st.rerun()
+        with col2:
+            if st.button("Login", use_container_width=True):
+                st.session_state.view = "login"
+                st.rerun()
 
 # Registration function
 def register_view():
+    render_top_right_button()
+    
     st.title("Create Your Account")
     
     # Display personality type from MBTI test
-    st.info(f"Your MBTI type: {st.session_state.personality_type}")
+    if st.session_state.personality_type:
+        st.info(f"Your MBTI type: {st.session_state.personality_type}")
     
     username = st.text_input("Choose Username")
     password = st.text_input("Choose Password", type="password")
@@ -576,7 +543,8 @@ def register_view():
                             "username": username,
                             "password": password,
                             "personality_type": st.session_state.personality_type,
-                            "problem_statement": st.session_state.get("problem_statement", "")
+                            "problem_statement": st.session_state.get("problem_statement", ""),
+                            "personality_results": st.session_state.personality_results  # Include full results
                         },
                         timeout=10
                     )
@@ -616,6 +584,8 @@ def register_view():
 
 # Login function
 def login_view():
+    render_top_right_button()
+    
     st.title("Personality Coach Login")
     st.session_state.user = st.text_input("Username")
     password = st.text_input("Password", type="password")
@@ -790,6 +760,8 @@ def delete_session(session_id):
 
 # User profile view
 def profile_view():
+    render_top_right_button()
+    
     st.title("User Profile")
     
     try:
@@ -809,9 +781,110 @@ def profile_view():
         r.raise_for_status()
         mbti_types = r.json().get("types", [])
         
-        # Display current profile
-        st.subheader("Current Profile")
-        st.write(f"Username: {profile.get('username')}")
+        # Display current profile in a card
+        st.markdown('<div class="profile-card">', unsafe_allow_html=True)
+        
+        # Username and personality type
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown(f"""
+            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                <div style="background-color: #f0f2f6; border-radius: 50%; width: 40px; height: 40px; 
+                            display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                    <span style="font-size: 20px;">👤</span>
+                </div>
+                <div>
+                    <p style="margin: 0; color: #888; font-size: 14px;">Username</p>
+                    <p style="margin: 0; font-weight: 600; font-size: 18px;">{profile.get('username', 'Unknown')}</p>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown(f"""
+            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                <div style="background-color: #f0f2f6; border-radius: 50%; width: 40px; height: 40px; 
+                            display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                    <span style="font-size: 20px;">🧠</span>
+                </div>
+                <div>
+                    <p style="margin: 0; color: #888; font-size: 14px;">Personality Type</p>
+                    <p style="margin: 0; font-weight: 600; font-size: 18px;">{profile.get('personality_type', 'Unknown')}</p>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Problem statement
+        st.markdown(f"""
+        <div style="margin-top: 10px;">
+            <p style="margin: 0; color: #888; font-size: 14px;">Current Challenge</p>
+            <p style="margin: 0; font-size: 16px;">{profile.get('problem_statement', 'No challenge specified')}</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Display personality results if available
+        if profile.get("personality_results"):
+            st.subheader("Your Personality Profile")
+            
+            results = profile.get("personality_results")
+            
+            # Create a card for personality type description
+            st.markdown('<div class="personality-card">', unsafe_allow_html=True)
+            
+            # Display personality type with badge
+            personality_type = results.get("personalityType", profile.get("personality_type", "Unknown"))
+            description = results.get("description", "")
+            
+            # Split the description if it contains separators
+            parts = description.split(" - ")
+            type_name = parts[1] if len(parts) > 1 else ""
+            type_desc = parts[2] if len(parts) > 2 else ""
+            
+            st.markdown(f'<div class="personality-badge">Your Personality Type</div>', unsafe_allow_html=True)
+            st.markdown(f"### {personality_type} - {type_name}")
+            st.write(type_desc)
+            
+            st.markdown('</div>', unsafe_allow_html=True)
+            
+            # Display strengths and weaknesses
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("#### Strengths")
+                try:
+                    strengths = json.loads(results.get("strengths", "[]"))
+                    for strength in strengths:
+                        st.markdown(f"- ✅ {strength}")
+                except:
+                    st.write(results.get("strengths", "No strengths data available"))
+            
+            with col2:
+                st.markdown("#### Potential Challenges")
+                try:
+                    weaknesses = json.loads(results.get("weaknesses", "[]"))
+                    for weakness in weaknesses:
+                        st.markdown(f"- ❌ {weakness}")
+                except:
+                    st.write(results.get("weaknesses", "No challenges data available"))
+            
+            # Display traits to develop
+            st.markdown("#### Traits to Develop")
+            try:
+                traits = json.loads(results.get("traits", "[]"))
+                for trait in traits:
+                    with st.expander(trait.get("trait", "Unnamed Trait")):
+                        st.write(trait.get("explanation", ""))
+                        st.markdown("**Action Steps:**")
+                        st.write(trait.get("action_steps", ""))
+            except:
+                st.write(results.get("traits", "No traits data available"))
+        else:
+            st.info("You haven't taken the personality test yet. Take the test to see your full personality profile.")
+            if st.button("Take Personality Test"):
+                st.session_state.view = "intro"
+                st.rerun()
         
         # Form for updating profile
         st.subheader("Update Profile")
@@ -824,31 +897,34 @@ def profile_view():
         current_problem = profile.get("problem_statement", "")
         new_problem = st.text_area("What's your main concern or problem?", value=current_problem)
         
-        if st.button("Update Profile"):
-            try:
-                update_url = f"{base_url}/api/profile"
-                r = requests.put(
-                    update_url,
-                    json={
-                        "personality_type": new_type,
-                        "problem_statement": new_problem
-                    },
-                    headers={"Authorization": f"Bearer {st.session_state.token}"},
-                    timeout=10
-                )
-                r.raise_for_status()
-                
-                # Update session state
-                st.session_state.personality_type = new_type
-                
-                st.success("Profile updated successfully!")
-                st.rerun()
-            except Exception as e:
-                st.error(f"Failed to update profile: {e}")
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Update Profile", use_container_width=True):
+                try:
+                    update_url = f"{base_url}/api/profile"
+                    r = requests.put(
+                        update_url,
+                        json={
+                            "personality_type": new_type,
+                            "problem_statement": new_problem
+                        },
+                        headers={"Authorization": f"Bearer {st.session_state.token}"},
+                        timeout=10
+                    )
+                    r.raise_for_status()
+                    
+                    # Update session state
+                    st.session_state.personality_type = new_type
+                    
+                    st.success("Profile updated successfully!")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Failed to update profile: {e}")
         
-        if st.button("Back to Chat"):
-            st.session_state.view = "chat"
-            st.rerun()
+        with col2:
+            if st.button("Back to Chat", use_container_width=True):
+                st.session_state.view = "chat"
+                st.rerun()
     
     except Exception as e:
         st.error(f"Failed to load profile: {e}")
@@ -859,6 +935,8 @@ def profile_view():
 
 # Main chat interface
 def chat_view():
+    render_top_right_button()
+    
     # Set up the layout with sidebar
     with st.sidebar:
         st.title("Chat Sessions")
@@ -891,13 +969,6 @@ def chat_view():
             with col2:
                 if st.button("🗑️", key=f"delete_{session['_id']}"):
                     delete_session(session["_id"])
-        
-        # Logout button
-        if st.button("Logout"):
-            for key in list(st.session_state.keys()):
-                del st.session_state[key]
-            st.session_state.view = "login"
-            st.rerun()
     
     # Main chat area
     st.title("Personality Coach")
