@@ -1,0 +1,15 @@
+flask
+flask-cors
+flask-pymongo
+pymongo
+dnspython
+bcrypt
+PyJWT
+pyngrok
+transformers
+torch
+bitsandbytes
+accelerate
+huggingface-hub
+requests
+streamlit
