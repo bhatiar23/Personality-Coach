@@ -339,13 +339,13 @@ def results_view():
     st.markdown(f"""
     <div style="text-align: center; margin-bottom: 2rem;">
         <div style="display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 9999px; 
-                    font-size: 0.875rem; font-weight: 500; background-color: rgba(59, 130, 246, 0.1);">
+                    font-size: 0.875rem; font-weight: 800; background-color: rgba(59, 130, 246, 0.1);">
             Your Personality Type
         </div>
-        <h2 style="margin-top: 0.5rem; font-size: 1.875rem; font-weight: 700; color: #1F2937;">
+        <h2 style="margin-top: 0.5rem; font-size: 1.875rem; font-weight: 700">
             {results["personalityType"]} - {results["description"].split(' - ')[1] if ' - ' in results["description"] else ''}
         </h2>
-        <p style="margin-top: 0.5rem; color: #4B5563;">
+        <p style="margin-top: 0.5rem;">
             {results["description"].split(' - ')[2] if ' - ' in results["description"] and len(results["description"].split(' - ')) > 2 else results["description"]}
         </p>
     </div>
@@ -354,8 +354,8 @@ def results_view():
     # Strengths & Weaknesses section
     st.markdown("""
     <div style="margin-bottom: 2rem; background-color: white; border-radius: 0.5rem; border: 1px solid #E5E7EB; padding: 1.5rem;">
-        <h3 style="font-size: 1.25rem; font-weight: 600; color: #1F2937; margin-bottom: 1rem;">
-            Strengths & Weaknesses for Your Challenge
+        <h3 style="font-size: 1.25rem; font-weight: 500; color: #1F2937; margin-bottom: 1rem;">
+            Strengths & Weaknesses for your Personality Type
         </h3>
     """, unsafe_allow_html=True)
     
