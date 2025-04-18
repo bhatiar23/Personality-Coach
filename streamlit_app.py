@@ -42,29 +42,29 @@ if "personality_results" not in st.session_state:
 def intro_screen():
     st.markdown("""
     <div style="text-align: center; padding: 2rem 0;">
-        <h1 style="font-size: 1.5rem; font-weight: 600; color: #1F2937; margin-bottom: 1rem;">Discover Your Personality Type</h1>
-        <p style="color: #4B5563; margin-bottom: 1.5rem;">Take this short personality assessment to receive personalized insights and advice for your challenges.</p>
+        <h1 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;">Discover Your Personality Type</h1>
+        <p style="margin-bottom: 1.5rem;">Take this short personality assessment to receive personalized insights and advice for your challenges.</p>
     </div>
     """, unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.markdown("""
-        <div style="display: flex; align-items: center; color: #4B5563; margin-bottom: 0.5rem;">
+        <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
             <span style="margin-right: 0.5rem;">⏱️</span>
             <span>Takes approximately 5-7 minutes</span>
         </div>
         """, unsafe_allow_html=True)
         
         st.markdown("""
-        <div style="display: flex; align-items: center; color: #4B5563; margin-bottom: 0.5rem;">
+        <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
             <span style="margin-right: 0.5rem;">🛡️</span>
             <span>Your responses are private and secure</span>
         </div>
         """, unsafe_allow_html=True)
         
         st.markdown("""
-        <div style="display: flex; align-items: center; color: #4B5563; margin-bottom: 1rem;">
+        <div style="display: flex; align-items: center; margin-bottom: 1rem;">
             <span style="margin-right: 0.5rem;">🤖</span>
             <span>AI-powered insights based on your responses</span>
         </div>
