@@ -8,7 +8,7 @@ import random
 
 # Properly construct the API URL
 base_url = os.getenv("BACKEND_URL",
-                     "https://a763-34-16-240-101.ngrok-free.app")
+                     "https://ac03-34-106-224-30.ngrok-free.app")
 API = f"{base_url}/api/chat"
 
 # Initialize session state variables
