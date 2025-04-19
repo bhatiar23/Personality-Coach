@@ -36,7 +36,7 @@ The system integrates with the Perplexity AI API for generating responses:
 ```python
 
 
-The backend also includes code for a Hugging Face model integration (commented out in the code), showing the system's flexibility to use different AI models:
+The backend also includes Hugging Face model integration, showing the system's flexibility to use different AI models:
 ```python
 # MODEL_NAME = "sugilee/DeepSeek-R1-Distill-Llama-8B-MentalHealth"
 # tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
