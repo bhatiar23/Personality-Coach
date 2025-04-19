@@ -21,18 +21,6 @@ The backend implements a JWT-based authentication system:
 - Token validation middleware (`token_required` decorator)
 - Secure API endpoints that require authentication
 
-```python
-SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'b0b682577f2c7c6e7f1c8e0797545edd821c6b3a7c5b22ef74965d50cd2b8b5b')
-
-@app.route('/api/login', methods=['POST'])
-def login():
-    # Authentication logic
-    token = jwt.encode({
-        'user_id': str(user['_id']),
-        'username': user['username'],
-        'exp': datetime.utcnow() + timedelta(days=1)
-    }, SECRET_KEY, algorithm='HS256')
-```
 
 ### Database Integration
 
