@@ -18,7 +18,7 @@ from datetime import datetime
 
 
 # Use your API key for login to use huggingface
-api_key = ""
+api_key = "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"
 
 # Perform login
 login(token=api_key)
@@ -30,7 +30,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Configure MongoDB
-app.config["MONGO_URI"] = ""
+app.config["MONGO_URI"] = "mongodb+srv://bhatiar:rmDVy59P6WoogZLo@artist-search-cluster.2zmat.mongodb.net/chat_db?retryWrites=true&w=majority&appName=artist-search-cluster"
 mongo = PyMongo(app)
 db = mongo.db
 supporters = db.supporters
@@ -51,7 +51,7 @@ def health_check():
     })
 
 # JWT Configuration
-SECRET_KEY = os.environ.get('JWT_SECRET_KEY', '')
+SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'b0b682577f2c7c6e7f1c8e0797545edd821c6b3a7c5b22ef74965d50cd2b8b5b')
 
 # # Model Loading
 # MODEL_NAME = "sugilee/DeepSeek-R1-Distill-Llama-8B-MentalHealth"
@@ -78,7 +78,7 @@ from openai import OpenAI
 import os
 
 # Get API key from environment variable
-PERPLEXITY_API_KEY = ""
+PERPLEXITY_API_KEY = "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"
 perplexity_client = OpenAI(
     api_key=PERPLEXITY_API_KEY,
     base_url="https://api.perplexity.ai"
