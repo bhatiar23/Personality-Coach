@@ -8,7 +8,7 @@ import random
 
 # Properly construct the API URL
 base_url = os.getenv("BACKEND_URL",
-                     "https://6c07-34-150-185-119.ngrok-free.app")
+                     "https://14b5-34-32-178-234.ngrok-free.app/")
 API = f"{base_url}/api/chat"
 
 # Initialize session state variables
@@ -908,51 +908,139 @@ def register_view():
             st.rerun()
 
 
-# Login function
+import re
+import requests
+import streamlit as st
+
+EMAIL_REGEX = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+
+def send_password_reset(email: str):
+    try:
+        reset_url = f"{base_url}/api/password_reset"
+        r = requests.post(reset_url, json={"email": email}, timeout=10)
+        r.raise_for_status()
+        st.success("✅ A password-reset link has been sent to your email.")
+    except Exception:
+        st.error("❌ Could not send reset email. Please try again later.")
+
 def login_view():
     render_top_right_button()
-
     st.title("Login")
-    username = st.text_input("Username")
+
+    username = st.text_input("Email")
     password = st.text_input("Password", type="password")
-
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("Login",
-                     use_container_width=True) and username and password:
+    if st.button("Login", use_container_width=True):
+        # 1) Validate email format
+        if not EMAIL_REGEX.match(username):
+            st.error("Please enter a valid email address.")
+        else:
+            # 2) Check email exists
             try:
-                login_url = f"{base_url}/api/login"
-                r = requests.post(login_url,
-                                  json={
-                                      "username": username,
-                                      "password": password
-                                  },
-                                  timeout=10)
-                r.raise_for_status()
-                data = r.json()
+                exists_url = f"{base_url}/api/users/exists"
+                r = requests.post(exists_url, json={"email": username}, timeout=5)
+                if r.status_code == 404:
+                    st.error("No account found with that email. Please sign up first.")
+                else:
+                    r.raise_for_status()
+                    # 3) Attempt login
+                    try:
+                        login_url = f"{base_url}/api/login"
+                        r2 = requests.post(
+                            login_url,
+                            json={"username": username, "password": password},
+                            timeout=10,
+                        )
+                        r2.raise_for_status()
+                        data = r2.json()
+                        st.session_state.update({
+                            "token": data["token"],
+                            "user_id": data["user_id"],
+                            "user": username,
+                            "personality_type": data.get("personality_type", "INTJ"),
+                            "logged": True,
+                            "view": "chat",
+                        })
+                        load_sessions()
+                        st.experimental_rerun()
 
-                # Store authentication data
-                st.session_state.token = data["token"]
-                st.session_state.user_id = data["user_id"]
-                st.session_state.user = username
-                st.session_state.personality_type = data.get(
-                    "personality_type", "INTJ")
-                st.session_state.logged = True
+                    except requests.HTTPError:
+                        st.error("Login failed: Email or Password is incorrect.")
+                        if st.button("Forgot your password?"):
+                            send_password_reset(username)
+                    except Exception:
+                        st.error("An unexpected error occurred. Please try again.")
+            except Exception:
+                st.error("Unable to verify email. Please try again later.")
 
-                # Load sessions
-                load_sessions()
+    # st.markdown(
+    #     'Don’t have an account? <a href="#" '
+    #     'onclick="document.dispatchEvent(new CustomEvent(\'streamlit:setSessionState\', '
+    #     "{detail: {view: 'intro'}})); "
+    #     'setTimeout(function() {window.parent.document.querySelector(\'button[kind=primaryFormSubmit]\').click();}, 100);">'
+    #     'Register</a>',
+    #     unsafe_allow_html=True,
+    # )
 
-                # Go to chat view
-                st.session_state.view = "chat"
-                st.rerun()
-
-            except Exception as e:
-                st.error(f"Login failed: {e}")
-
+    
+    col1, col2 = st.columns([0.4, 0.6])
+    with col1:
+        st.text("Don't have an account?")
     with col2:
-        if st.button("Take Personality Test", use_container_width=True):
+        if st.button("Register", use_container_width=False):
             st.session_state.view = "intro"
             st.rerun()
+    
+    
+
+
+# # Login function
+# def login_view():
+#     render_top_right_button()
+
+#     st.title("Login")
+#     username = st.text_input("Email")
+#     password = st.text_input("Password", type="password")
+
+#     # col1, col2 = st.columns(2)
+#     # with col1:
+#     if st.button("Login", use_container_width=True) and username and password:
+#         try:
+#             login_url = f"{base_url}/api/login"
+#             r = requests.post(login_url,
+#                               json={
+#                                   "username": username,
+#                                   "password": password
+#                               },
+#                               timeout=10)
+#             r.raise_for_status()
+#             data = r.json()
+
+#             # Store authentication data
+#             st.session_state.token = data["token"]
+#             st.session_state.user_id = data["user_id"]
+#             st.session_state.user = username
+#             st.session_state.personality_type = data.get(
+#                 "personality_type", "INTJ")
+#             st.session_state.logged = True
+
+#             # Load sessions
+#             load_sessions()
+
+#             # Go to chat view
+#             st.session_state.view = "chat"
+#             st.rerun()
+
+#         except Exception as e:
+#             st.error("Login failed: Email or Password is incorrect")
+
+    # with col2:
+    # st.text("Don't have an account?")
+    # if st.button("Take Personality Test", use_container_width=False):
+    #     st.session_state.view = "intro"
+    #     st.rerun()
+
+
+
 
 
 # Load user's chat sessions
@@ -1549,7 +1637,6 @@ footer = """
 """
 
 st.markdown(footer, unsafe_allow_html=True)
-
 
 if __name__ == "__main__":
     main()
